@@ -12,8 +12,8 @@ export default class Input {
       || document.body.getAttribute(`lang`)
       || `en`;
 
-    this.format = this.element.getAttribute('date-format')
-      || document.body.getAttribute('date-format')
+    this.format = this.element.getAttribute(`date-format`)
+      || document.body.getAttribute(`date-format`)
       || this.element.getAttribute(`data-date-format`)
       || document.body.getAttribute(`data-date-format`)
       || `yyyy-mm-dd`;
@@ -23,25 +23,26 @@ export default class Input {
     Object.defineProperties(
       this.element,
       {
-        'valueAsDate': {
+        valueAsDate: {
           get: () => {
             if(!this.element.value) {
               return null;
             }
-            const format = this.format || 'yyyy-mm-dd';
+            const format = this.format || `yyyy-mm-dd`;
             const parts = this.element.value.match(/(\d+)/g);
-            let i = 0, fmt = {};
+            let i = 0;
+            const fmt = {};
 
             format.replace(/(yyyy|dd|mm)/g, part=> {
               fmt[part] = i++;
             });
-            return new Date(parts[fmt['yyyy']], parts[fmt['mm']]-1, parts[fmt['dd']]);
+            return new Date(parts[fmt[`yyyy`]], parts[fmt[`mm`]]-1, parts[fmt[`dd`]]);
           },
           set: val => {
             this.element.value = dateFormat(val, this.format);
           }
         },
-        'valueAsNumber': {
+        valueAsNumber: {
           get: ()=> {
             if(!this.element.value) {
               return NaN;
@@ -114,46 +115,6 @@ export default class Input {
       ) {
         return locales[localeSet];
       }
-    }
-  }
-
-  // Return false if the browser does not support input[type="date"].
-  static supportsDateInput() {
-    const input = document.createElement(`input`);
-    input.setAttribute(`type`, `date`);
-
-    const notADateValue = `not-a-date`;
-    input.setAttribute(`value`, notADateValue);
-
-    return !(input.value === notADateValue);
-  }
-
-  // Will add the Picker to all inputs in the page.
-  static addPickerToDateInputs() {
-    // Get and loop all the input[type="date"]s in the page that do not have `[data-has-picker]` yet.
-    const dateInputs = document.querySelectorAll(`input[type="date"]:not([data-has-picker])`);
-    const length = dateInputs.length;
-
-    if(!length) {
-      return false;
-    }
-
-    for(let i = 0; i < length; ++i) {
-      new Input(dateInputs[i]);
-    }
-  }
-
-  static addPickerToOtherInputs() {
-    // Get and loop all the input[type="text"] class date-polyfill in the page that do not have `[data-has-picker]` yet.
-    const dateInputs = document.querySelectorAll(`input[type="text"].date-polyfill:not([data-has-picker])`);
-    const length = dateInputs.length;
-
-    if(!length) {
-      return false;
-    }
-
-    for(let i = 0; i < length; ++i) {
-      new Input(dateInputs[i]);
     }
   }
 }

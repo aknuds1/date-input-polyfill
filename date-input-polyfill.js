@@ -1,11 +1,28 @@
 import './date-input-polyfill.scss';
-import Input from './input.js';
+const Input = require(`./input.js`);
+
+const supportsDateInput = () => {
+  const input = document.createElement(`input`);
+  input.setAttribute(`type`, `date`);
+
+  const notADateValue = `not-a-date`;
+  input.setAttribute(`value`, notADateValue);
+
+  return input.value !== notADateValue;
+};
 
 const addPickers = () => {
-  Input.addPickerToOtherInputs();
-  // Check if type="date" is supported.
-  if(!Input.supportsDateInput()) {
-    Input.addPickerToDateInputs();
+  const dateInputs = document.querySelectorAll(
+    `input[type="text"].date-polyfill:not([data-has-picker])`);
+  for(let i = 0; i < dateInputs.length; ++i) {
+    new Input(dateInputs[i]);
+  }
+
+  if(!supportsDateInput()) {
+    const dateInputs = document.querySelectorAll(`input[type="date"]:not([data-has-picker])`);
+    for(let i = 0; i < dateInputs.length; ++i) {
+      new Input(dateInputs[i]);
+    }
   }
 };
 
